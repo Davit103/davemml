@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Image Updater</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+        select, input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+        }
+        img {
+            margin-top: 20px;
+            width: 100%;
+            max-width: 600px;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>PIINs Graphs</h1>
+        <label for="modelSelect">Select Method:</label>
+        <select id="modelSelect">
+            <option value="RK45">Method RK45</option>
+            <option value="BDF">Method BDF</option>
+            <option value="Radau">Method Radau</option>
+            <option value="LSODA">Method LSODA</option>
+            <option value="RK23">Method RK23</option>
+            <option value="DOP853">Method DOP853</option>
+            <!-- Add more models as needed -->
+        </select>
+
+        <label for="gammaInput">Enter Gamma Value:</label>
+        <input type="number" id="gammaInput" step="0.01" placeholder="Enter gamma value" value="0.80" min="0.80" max="1.30">
+
+        <img id="dynamicImage" src="/Graphs/BDF_0_80.png" alt="Dynamic Graph">
+
+        <!-- <p id="imageURL"></p> -->
+    </div>
+
+    <script>
+        // Function to update the image URL based on inputs
+        function updateImageURL() {
+            const model = document.getElementById('modelSelect').value;
+            let gamma = parseFloat(document.getElementById('gammaInput').value);
+
+            // Define the min and max gamma values
+            const minGamma = 0.80;
+            const maxGamma = 1.30;
+
+            // Validate the gamma value
+            if (isNaN(gamma) || gamma < minGamma || gamma > maxGamma) {
+                alert(`Gamma value must be between ${minGamma.toFixed(2)} and ${maxGamma.toFixed(2)}.`);
+                document.getElementById('gammaInput').value = Math.max(minGamma, Math.min(maxGamma, gamma || minGamma));
+                return; // Do not update the image if the value is invalid
+            }
+
+            // Ensure gamma has two decimal places and replace period with underscore
+            let gammaStr = gamma.toFixed(2).replace(".", "_");
+
+            // Construct the new URL
+            const imageURL = `/Graphs/${model}_${gammaStr}.png`;
+
+            // Update the image source
+            document.getElementById('dynamicImage').src = imageURL;
+            // document.getElementById('imageURL').textContent = imageURL; // Display the URL for reference
+        }
+
+        // Event listeners for input changes
+        document.getElementById('modelSelect').addEventListener('change', updateImageURL);
+        document.getElementById('gammaInput').addEventListener('blur', updateImageURL);
+
+        // Initialize with default values
+        updateImageURL();
+    </script>
+</body>
+</html>
